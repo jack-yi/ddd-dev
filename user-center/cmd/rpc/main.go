@@ -43,6 +43,7 @@ func main() {
 	userApp := application.NewUserApp(userRepo, roleRepo, jwtCfg, db)
 
 	seed.SeedRoles(context.Background(), roleRepo)
+	seed.SeedSuperAdmin(context.Background(), userRepo, roleRepo)
 
 	srv := zrpc.MustNewServer(c.RpcServerConf, func(s *grpc.Server) {
 		pb.RegisterUserCenterServer(s, rpcServer.NewUserCenterServer(userApp))

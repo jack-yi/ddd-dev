@@ -18,7 +18,7 @@ func NewUserRepoImpl(db *gorm.DB) *UserRepoImpl {
 }
 
 func (r *UserRepoImpl) Save(ctx context.Context, user *entity.User) error {
-	record := &po.User{GoogleID: user.GoogleID, Email: user.Email, Name: user.Name, Avatar: user.Avatar, Status: user.Status}
+	record := &po.User{GoogleID: user.GoogleID, Email: user.Email, Name: user.Name, Avatar: user.Avatar, Username: user.Username, PasswordHash: user.PasswordHash, Status: user.Status}
 	if err := r.db.WithContext(ctx).Create(record).Error; err != nil {
 		return fmt.Errorf("create user: %w", err)
 	}
@@ -56,9 +56,18 @@ func (r *UserRepoImpl) Update(ctx context.Context, user *entity.User) error {
 	}).Error
 }
 
+func (r *UserRepoImpl) FindByUsername(ctx context.Context, username string) (*entity.User, error) {
+	var record po.User
+	if err := r.db.WithContext(ctx).Where("username = ?", username).First(&record).Error; err != nil {
+		return nil, err
+	}
+	return toUserEntity(&record), nil
+}
+
 func toUserEntity(p *po.User) *entity.User {
 	return &entity.User{
 		ID: p.ID, GoogleID: p.GoogleID, Email: p.Email, Name: p.Name,
-		Avatar: p.Avatar, Status: p.Status, CreatedAt: p.CreatedAt, UpdatedAt: p.UpdatedAt,
+		Avatar: p.Avatar, Username: p.Username, PasswordHash: p.PasswordHash,
+		Status: p.Status, CreatedAt: p.CreatedAt, UpdatedAt: p.UpdatedAt,
 	}
 }

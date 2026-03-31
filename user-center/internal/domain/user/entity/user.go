@@ -20,8 +20,10 @@ type User struct {
 	GoogleID  string
 	Email     string
 	Name      string
-	Avatar    string
-	Status    string
+	Avatar       string
+	Username     string
+	PasswordHash string
+	Status       string
 	Roles     []Role
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -45,6 +47,19 @@ func NewUser(googleID, email, name, avatar string) *User {
 		Status:    StatusActive,
 		CreatedAt: now,
 		UpdatedAt: now,
+	}
+}
+
+func NewAdminUser(username, passwordHash, email string) *User {
+	now := time.Now()
+	return &User{
+		Username:     username,
+		PasswordHash: passwordHash,
+		Email:        email,
+		Name:         username,
+		Status:       StatusActive,
+		CreatedAt:    now,
+		UpdatedAt:    now,
 	}
 }
 

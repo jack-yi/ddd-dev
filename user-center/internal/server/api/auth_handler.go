@@ -99,6 +99,28 @@ func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (h *AuthHandler) PasswordLogin(w http.ResponseWriter, r *http.Request) {
+	var req dto.PasswordLoginReq
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, 400, "invalid request body")
+		return
+	}
+
+	user, token, err := h.userApp.LoginByPassword(r.Context(), req.Username, req.Password)
+	if err != nil {
+		writeJSON(w, 401, err.Error())
+		return
+	}
+
+	writeSuccess(w, dto.LoginResp{
+		Token: token,
+		User: dto.UserResp{
+			ID: user.ID, Email: user.Email, Name: user.Name,
+			Avatar: user.Avatar, Status: user.Status, Roles: user.RoleNames(),
+		},
+	})
+}
+
 func writeJSON(w http.ResponseWriter, code int, msg string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

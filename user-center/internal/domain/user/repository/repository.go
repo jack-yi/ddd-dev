@@ -12,6 +12,7 @@ type UserRepository interface {
 	FindByGoogleID(ctx context.Context, googleID string) (*entity.User, error)
 	FindByEmail(ctx context.Context, email string) (*entity.User, error)
 	Update(ctx context.Context, user *entity.User) error
+	FindByUsername(ctx context.Context, username string) (*entity.User, error)
 }
 
 type RoleRepository interface {

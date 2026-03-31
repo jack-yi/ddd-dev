@@ -8,6 +8,7 @@ import (
 	"github.com/yangboyi/ddd-dev/user-center/internal/domain/user/entity"
 	"github.com/yangboyi/ddd-dev/user-center/internal/domain/user/repository"
 	po "github.com/yangboyi/ddd-dev/user-center/internal/model/po/mysql"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -141,4 +142,34 @@ func (a *UserApp) CheckRole(ctx context.Context, userID int64, roleName string) 
 func (a *UserApp) NeedInit(ctx context.Context) (bool, error) {
 	has, err := a.roleRepo.HasSuperAdmin(ctx)
 	return !has, err
+}
+
+func (a *UserApp) LoginByPassword(ctx context.Context, username, password string) (*entity.User, string, error) {
+	user, err := a.userRepo.FindByUsername(ctx, username)
+	if err != nil {
+		return nil, "", fmt.Errorf("invalid username or password")
+	}
+	if !checkPassword(user.PasswordHash, password) {
+		return nil, "", fmt.Errorf("invalid username or password")
+	}
+	if !user.IsActive() {
+		return nil, "", fmt.Errorf("user is disabled")
+	}
+	roles, _ := a.roleRepo.FindByUserID(ctx, user.ID)
+	user.Roles = roles
+	token, err := GenerateToken(a.jwtCfg, user.ID, user.Email, user.Name, user.RoleNames())
+	if err != nil {
+		return nil, "", fmt.Errorf("generate token: %w", err)
+	}
+	return user, token, nil
+}
+
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+
+func checkPassword(hash, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

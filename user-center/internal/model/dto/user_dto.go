@@ -36,3 +36,8 @@ type UserFilter struct {
 type CheckInitResp struct {
 	NeedInit bool `json:"needInit"`
 }
+
+type PasswordLoginReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}

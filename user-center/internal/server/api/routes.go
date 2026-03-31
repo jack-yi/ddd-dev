@@ -14,6 +14,7 @@ func RegisterRoutes(engine *rest.Server, auth *AuthHandler, user *UserHandler, i
 	engine.AddRoutes([]rest.Route{
 		{Method: http.MethodGet, Path: "/api/auth/google/login", Handler: auth.GoogleLogin},
 		{Method: http.MethodGet, Path: "/api/auth/google/callback", Handler: auth.GoogleCallback},
+		{Method: http.MethodPost, Path: "/api/auth/login", Handler: auth.PasswordLogin},
 		{Method: http.MethodGet, Path: "/api/init/check", Handler: init.Check},
 	})
 
