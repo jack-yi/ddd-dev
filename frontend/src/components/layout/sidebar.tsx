@@ -11,6 +11,7 @@ const navItems = [
   { href: "/products", label: "商品管理", icon: "🏷️", roles: null },
   { href: "/publish", label: "发品任务", icon: "🚀", roles: null },
   { href: "/users", label: "用户管理", icon: "👥", roles: ["super_admin", "admin"] },
+  { href: "/profile", label: "个人中心", icon: "👤", roles: null },
 ];
 
 export function Sidebar() {
