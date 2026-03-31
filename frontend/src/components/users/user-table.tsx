@@ -9,10 +9,11 @@ import { api } from "@/lib/api";
 import { getUser } from "@/lib/auth";
 
 interface User {
-  ID: number;
-  Email: string;
-  Name: string;
-  Status: string;
+  id: number;
+  email: string;
+  name: string;
+  status: string;
+  roles: string[];
 }
 
 const roleOptions = ["super_admin", "admin", "operator", "viewer"];
@@ -38,45 +39,51 @@ export function UserTable({ items, onRefresh }: { items: User[]; onRefresh: () =
         <TableRow>
           <TableHead>邮箱</TableHead>
           <TableHead>名称</TableHead>
+          <TableHead>当前角色</TableHead>
           <TableHead>状态</TableHead>
           <TableHead>操作</TableHead>
           {isSuperAdmin && <TableHead>角色分配</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
-        {items.map((item) => (
-          <TableRow key={item.ID}>
-            <TableCell>{item.Email}</TableCell>
-            <TableCell>{item.Name}</TableCell>
-            <TableCell>
-              <Badge variant={item.Status === "active" ? "default" : "destructive"}>
-                {item.Status === "active" ? "正常" : "禁用"}
-              </Badge>
-            </TableCell>
-            <TableCell>
-              <Button size="sm" variant="outline" onClick={() => handleToggleStatus(item.ID, item.Status)}>
-                {item.Status === "active" ? "禁用" : "启用"}
-              </Button>
-            </TableCell>
-            {isSuperAdmin && (
+        {items.map((item) => {
+          const currentRole = item.roles?.[0] || "viewer";
+          return (
+            <TableRow key={item.id}>
+              <TableCell>{item.email}</TableCell>
+              <TableCell>{item.name}</TableCell>
               <TableCell>
-                <select
-                  className="border rounded px-2 py-1 text-sm"
-                  onChange={(e) => handleAssignRole(item.ID, e.target.value)}
-                  defaultValue=""
-                >
-                  <option value="" disabled>选择角色</option>
-                  {roleOptions.map((r) => (
-                    <option key={r} value={r}>{r}</option>
-                  ))}
-                </select>
+                <Badge variant="outline">{currentRole}</Badge>
               </TableCell>
-            )}
-          </TableRow>
-        ))}
+              <TableCell>
+                <Badge variant={item.status === "active" ? "default" : "destructive"}>
+                  {item.status === "active" ? "正常" : "禁用"}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <Button size="sm" variant="outline" onClick={() => handleToggleStatus(item.id, item.status)}>
+                  {item.status === "active" ? "禁用" : "启用"}
+                </Button>
+              </TableCell>
+              {isSuperAdmin && (
+                <TableCell>
+                  <select
+                    className="border rounded px-2 py-1 text-sm"
+                    value={currentRole}
+                    onChange={(e) => handleAssignRole(item.id, e.target.value)}
+                  >
+                    {roleOptions.map((r) => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </select>
+                </TableCell>
+              )}
+            </TableRow>
+          );
+        })}
         {items.length === 0 && (
           <TableRow>
-            <TableCell colSpan={5} className="text-center text-gray-400 py-8">暂无用户</TableCell>
+            <TableCell colSpan={6} className="text-center text-gray-400 py-8">暂无用户</TableCell>
           </TableRow>
         )}
       </TableBody>

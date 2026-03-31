@@ -71,7 +71,16 @@ func (a *UserApp) GetUserInfo(ctx context.Context, userID int64) (*entity.User, 
 	return user, nil
 }
 
-func (a *UserApp) ListUsers(ctx context.Context, page, pageSize int) ([]po.User, int64, error) {
+type UserWithRoles struct {
+	ID     int64    `json:"id"`
+	Email  string   `json:"email"`
+	Name   string   `json:"name"`
+	Avatar string   `json:"avatar"`
+	Status string   `json:"status"`
+	Roles  []string `json:"roles"`
+}
+
+func (a *UserApp) ListUsers(ctx context.Context, page, pageSize int) ([]UserWithRoles, int64, error) {
 	if page < 1 {
 		page = 1
 	}
@@ -83,7 +92,20 @@ func (a *UserApp) ListUsers(ctx context.Context, page, pageSize int) ([]po.User,
 	query := a.db.WithContext(ctx).Model(&po.User{})
 	query.Count(&total)
 	query.Order("created_at DESC").Offset((page - 1) * pageSize).Limit(pageSize).Find(&users)
-	return users, total, nil
+
+	result := make([]UserWithRoles, len(users))
+	for i, u := range users {
+		roles, _ := a.roleRepo.FindByUserID(ctx, u.ID)
+		roleNames := make([]string, len(roles))
+		for j, r := range roles {
+			roleNames[j] = r.Name
+		}
+		result[i] = UserWithRoles{
+			ID: u.ID, Email: u.Email, Name: u.Name,
+			Avatar: u.Avatar, Status: u.Status, Roles: roleNames,
+		}
+	}
+	return result, total, nil
 }
 
 func (a *UserApp) UpdateStatus(ctx context.Context, userID int64, status string) error {
