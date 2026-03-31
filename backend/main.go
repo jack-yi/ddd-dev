@@ -14,6 +14,7 @@ import (
 	"github.com/yangboyi/ddd-dev/backend/internal/server"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
+	"github.com/zeromicro/go-zero/zrpc"
 	"context"
 
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -48,8 +49,9 @@ func main() {
 	srv := rest.MustNewServer(c.RestConf, rest.WithCors())
 	defer srv.Stop()
 
-	handlers := internal.InitHandlers(db)
-	server.RegisterRoutes(srv, handlers.SourceItem, handlers.Product, handlers.Publish)
+	userCenterRpc := zrpc.MustNewClient(c.UserCenterRpc)
+	handlers := internal.InitHandlers(db, userCenterRpc)
+	server.RegisterRoutes(srv, handlers.SourceItem, handlers.Product, handlers.Publish, handlers.AuthMiddleware)
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	srv.Start()
