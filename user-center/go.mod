@@ -5,9 +5,12 @@ go 1.25.0
 require (
 	github.com/golang/protobuf v1.5.4
 	google.golang.org/grpc v1.79.3
+	gorm.io/gorm v1.31.1
 )
 
 require (
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
 	go.opentelemetry.io/otel v1.40.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.40.0 // indirect
 	golang.org/x/net v0.50.0 // indirect
