@@ -1,5 +1,5 @@
 Name: user-center.rpc
-ListenOn: 0.0.0.0:8881
+ListenOn: 127.0.0.1:8881
 
 Etcd:
   Hosts:

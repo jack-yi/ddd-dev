@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strings"
 
@@ -37,6 +38,7 @@ func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 
 		resp, err := m.userCenterClient.VerifyToken(r.Context(), &pb.VerifyTokenReq{Token: tokenStr})
 		if err != nil {
+			log.Printf("[auth] VerifyToken RPC error: %v", err)
 			http.Error(w, `{"code":401,"message":"invalid token"}`, http.StatusUnauthorized)
 			return
 		}
