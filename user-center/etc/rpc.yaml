@@ -1,0 +1,14 @@
+Name: user-center.rpc
+ListenOn: 0.0.0.0:8881
+
+Etcd:
+  Hosts:
+    - "127.0.0.1:2379"
+  Key: user-center.rpc
+
+MySQL:
+  DataSource: "root:root123@tcp(127.0.0.1:3306)/dropship?charset=utf8mb4&parseTime=True&loc=Local"
+
+JWT:
+  Secret: "your-jwt-secret-key-change-in-production"
+  Expire: 86400

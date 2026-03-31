@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package usercenter;
+option go_package = "./pb";
+
+message VerifyTokenReq {
+  string token = 1;
+}
+
+message VerifyTokenResp {
+  int64 user_id = 1;
+  string email = 2;
+  string name = 3;
+  repeated string roles = 4;
+}
+
+message CheckRoleReq {
+  int64 user_id = 1;
+  string role = 2;
+}
+
+message CheckRoleResp {
+  bool has_role = 1;
+}
+
+message GetUserInfoReq {
+  int64 user_id = 1;
+}
+
+message UserInfo {
+  int64 id = 1;
+  string email = 2;
+  string name = 3;
+  string avatar = 4;
+  string status = 5;
+  repeated string roles = 6;
+}
+
+service UserCenter {
+  rpc VerifyToken(VerifyTokenReq) returns (VerifyTokenResp);
+  rpc CheckRole(CheckRoleReq) returns (CheckRoleResp);
+  rpc GetUserInfo(GetUserInfoReq) returns (UserInfo);
+}

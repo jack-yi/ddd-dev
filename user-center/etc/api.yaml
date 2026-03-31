@@ -1,0 +1,21 @@
+Name: user-center-api
+Host: 0.0.0.0
+Port: 8880
+
+MySQL:
+  DataSource: "root:root123@tcp(127.0.0.1:3306)/dropship?charset=utf8mb4&parseTime=True&loc=Local"
+
+JWT:
+  Secret: "your-jwt-secret-key-change-in-production"
+  Expire: 86400
+
+Google:
+  ClientID: "your-google-client-id"
+  ClientSecret: "your-google-client-secret"
+  RedirectURL: "http://localhost:8880/api/auth/google/callback"
+
+UserCenterRpc:
+  Etcd:
+    Hosts:
+      - "127.0.0.1:2379"
+    Key: user-center.rpc
