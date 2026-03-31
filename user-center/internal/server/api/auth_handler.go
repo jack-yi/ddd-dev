@@ -1,10 +1,12 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 
 	"github.com/yangboyi/ddd-dev/user-center/internal/application"
 	"github.com/yangboyi/ddd-dev/user-center/internal/config"
@@ -44,13 +46,19 @@ func (h *AuthHandler) GoogleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.oauthConfig.Exchange(r.Context(), code)
+	// 使用代理访问 Google API
+	proxyURL, _ := url.Parse("http://127.0.0.1:7890")
+	proxyTransport := &http.Transport{Proxy: http.ProxyURL(proxyURL)}
+	proxyClient := &http.Client{Transport: proxyTransport}
+	ctx := context.WithValue(r.Context(), oauth2.HTTPClient, proxyClient)
+
+	token, err := h.oauthConfig.Exchange(ctx, code)
 	if err != nil {
 		writeJSON(w, 500, fmt.Sprintf("exchange token: %v", err))
 		return
 	}
 
-	client := h.oauthConfig.Client(r.Context(), token)
+	client := h.oauthConfig.Client(ctx, token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
 		writeJSON(w, 500, fmt.Sprintf("get user info: %v", err))
