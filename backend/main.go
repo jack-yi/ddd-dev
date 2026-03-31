@@ -7,6 +7,9 @@ import (
 
 	"github.com/yangboyi/ddd-dev/backend/infra/config"
 	"github.com/yangboyi/ddd-dev/backend/infra/vars"
+	"github.com/yangboyi/ddd-dev/backend/internal"
+	po "github.com/yangboyi/ddd-dev/backend/internal/model/po/mysql"
+	"github.com/yangboyi/ddd-dev/backend/internal/server"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
 	"gorm.io/driver/mysql"
@@ -27,9 +30,17 @@ func main() {
 	}
 	vars.DB = db
 
-	server := rest.MustNewServer(c.RestConf)
-	defer server.Stop()
+	// Auto migrate tables
+	if err := db.AutoMigrate(&po.SourceItem{}, &po.Product{}, &po.ProductSKU{}, &po.PublishTask{}); err != nil {
+		log.Fatalf("auto migrate error: %v", err)
+	}
+
+	srv := rest.MustNewServer(c.RestConf, rest.WithCors())
+	defer srv.Stop()
+
+	handlers := internal.InitHandlers(db)
+	server.RegisterRoutes(srv, handlers.SourceItem, handlers.Product, handlers.Publish)
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
-	server.Start()
+	srv.Start()
 }
