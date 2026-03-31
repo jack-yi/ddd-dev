@@ -61,9 +61,11 @@ export function UserTable({ items, onRefresh }: { items: User[]; onRefresh: () =
                 </Badge>
               </TableCell>
               <TableCell>
-                <Button size="sm" variant="outline" onClick={() => handleToggleStatus(item.id, item.status)}>
-                  {item.status === "active" ? "禁用" : "启用"}
-                </Button>
+                {currentRole !== "super_admin" && item.id !== currentUser?.id && (
+                  <Button size="sm" variant="outline" onClick={() => handleToggleStatus(item.id, item.status)}>
+                    {item.status === "active" ? "禁用" : "启用"}
+                  </Button>
+                )}
               </TableCell>
               {isSuperAdmin && (
                 <TableCell>

@@ -113,6 +113,9 @@ func (a *UserApp) UpdateStatus(ctx context.Context, userID int64, status string)
 	if err != nil {
 		return err
 	}
+	// 加载角色，Disable() 需要检查是否为 super_admin
+	roles, _ := a.roleRepo.FindByUserID(ctx, userID)
+	user.Roles = roles
 	switch status {
 	case "active":
 		user.Enable()
