@@ -3,4 +3,9 @@ Host: 0.0.0.0
 Port: 8888
 
 MySQL:
-  DataSource: "root:123456@tcp(127.0.0.1:3306)/dropship?charset=utf8mb4&parseTime=True&loc=Local"
+  DataSource: "root:root123@tcp(127.0.0.1:3306)/dropship?charset=utf8mb4&parseTime=True&loc=Local"
+
+Etcd:
+  Hosts:
+    - "127.0.0.1:2379"
+  Key: "/dropship/config"
