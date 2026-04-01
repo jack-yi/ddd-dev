@@ -1,0 +1,18 @@
+# Sensitive config
+user-center/etc/api.yaml
+
+# Brainstorm sessions
+.superpowers/
+
+# Generated artifacts
+frontend/deps.svg
+backend/callgraph.*
+
+# Node
+node_modules/
+.next/
+
+# Go
+*.exe
+*.test
+*.out
